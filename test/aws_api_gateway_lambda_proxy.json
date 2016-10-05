@@ -1,0 +1,52 @@
+{
+    "body": null,
+    "resource": "/py_bottle_test",
+    "requestContext": {
+        "resourceId": "sp22ba",
+        "apiId": "nqn2uyi3ej",
+        "resourcePath": "/py_bottle_test",
+        "httpMethod": "GET",
+        "requestId": "e75b7619-89dc-11e6-992d-89cdc37eedd7",
+        "accountId": "444914307613",
+        "identity": {
+            "apiKey": null,
+            "userArn": null,
+            "cognitoAuthenticationType": null,
+            "caller": null,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36",
+            "user": null,
+            "cognitoIdentityPoolId": null,
+            "cognitoIdentityId": null,
+            "cognitoAuthenticationProvider": null,
+            "sourceIp": "179.98.175.244",
+            "accountId": null
+        },
+        "stage": "prod"
+    },
+    "queryStringParameters": null,
+    "httpMethod": "GET",
+    "pathParameters": null,
+    "headers": {
+        "Via": "1.1 473acf4bc21a70af2b2991357ab5c22a.cloudfront.net (CloudFront)",
+        "Accept-Language": "en-US,en;q=0.8,pt;q=0.6",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "X-Forwarded-For": "179.98.175.244, 54.182.233.12",
+        "CloudFront-Viewer-Country": "BR",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Upgrade-Insecure-Requests": "1",
+        "X-Forwarded-Port": "443",
+        "Host": "nqn2uyi3ej.execute-api.us-east-1.amazonaws.com",
+        "X-Forwarded-Proto": "https",
+        "Referer": "https://console.aws.amazon.com/lambda/home?region=us-east-1",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "Cache-Control": "max-age=0",
+        "X-Amz-Cf-Id": "YU5ou_g8zaOlygg6Ltl855NrnB8oCMUCyaY7Ul1lx8tC_FXuO4yJWA==",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36",
+        "CloudFront-Forwarded-Proto": "https",
+        "Accept-Encoding": "gzip, deflate, sdch, br"
+    },
+    "stageVariables": null,
+    "path": "/py_bottle_test"
+}
