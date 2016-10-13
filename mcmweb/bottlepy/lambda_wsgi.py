@@ -4,6 +4,8 @@ import logging
 import urllib
 from StringIO import StringIO
 
+SPECIAL_HEADERS = ('CONTENT_TYPE', 'CONTENT_LENGTH')
+
 
 class StartResponse(object):
     status = None
@@ -30,22 +32,21 @@ class StartResponse(object):
 
 def handler(wsgi_app, event, context):
     wsgi_environ = {
-        'wsgi.input': event.get('body'),
+        'wsgi.input': StringIO(event.get('body')),
         'wsgi.errors': StringIO(),
-        # 'CONTENT_TYPE': event['headers'].get('Content-Type'),
-        'PATH_INFO': str(event.get('path', '/')),
+        'PATH_INFO': '/%s%s' % (str(event['requestContext']['stage']), str(event['path'])),
         'REQUEST_METHOD': str(event.get('httpMethod', 'GET'))
     }
 
     if 'queryStringParameters' in event and event['queryStringParameters']:
         wsgi_environ['QUERY_STRING'] = urllib.urlencode(event['queryStringParameters'])
-    else:
-        wsgi_environ['QUERY_STRING'] = ''
 
     if 'headers' in event and event['headers']:
-        for key, value in event['headers'].iteritems():
-            cgi_key = 'HTTP_%s' % key.replace('-', '_').upper()
-            wsgi_environ[cgi_key] = value
+        for header, value in event['headers'].iteritems():
+            header = str(header.replace('-', '_')).upper()
+            if header not in SPECIAL_HEADERS:
+                header = 'HTTP_%s' % header
+            wsgi_environ[header] = str(value)
 
     start_response = StartResponse()
     wsgi_response = wsgi_app(wsgi_environ, start_response.start)
@@ -56,15 +57,10 @@ def handler(wsgi_app, event, context):
         'statusCode': int(start_response.get_status().split(' ')[0])
     }
 
-    # error_value = wsgi_environ['wsgi.errors'].getvalue()
-    # if error_value:
-    #     lambda_response['Error'] = error_value
-
     if start_response.get_exc_info():
         try:
             raise start_response.get_exc_info()
         except:
-            # lambda_response['Exception'] = str(start_response.get_exc_info())  # blargh :(
             logging.exception('Error executing request')
 
     return lambda_response

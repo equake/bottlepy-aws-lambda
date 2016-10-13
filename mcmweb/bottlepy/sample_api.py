@@ -1,29 +1,10 @@
-from bottle import Bottle, request, debug
+from bottle import Bottle, request, response, debug
 
 app = Bottle()
 debug(True)
 
 
-@app.route('/py_bottle_test')
-def index():
-    return {'a': 'b', 'c': 'd'}
-
-
-@app.route('/path/to/resource', method=['GET', 'POST'])
-def post_url():
-    params = dict()
-    headers = dict()
-
-    for key in request.GET:
-        params[key] = request.GET.get(key)
-
-    for key in request.headers:
-        headers[key] = request.headers.get(key)
-
-    return {'method': request.method, 'params': params, 'headers': headers}
-
-
-@app.route('/test')
+@app.route('/', method=['GET', 'POST'])
 def test():
     response = '<h1>Funfa!</h1>'
 
@@ -32,12 +13,23 @@ def test():
         for header in request.headers:
             response += '<b>%s</b>: %s<br>\n' % (header, request.headers.get(header))
 
-    if request.GET:
-        response += '<h3>Params com request.GET:</h3>\n'
-        for param in request.GET:
-            response += '<b>%s</b>: %s<br>\n' % (param, request.GET.get(param))
+    if request.params:
+        response += '<h3>Params com request.params:</h3>\n'
+        for param in request.params:
+            response += '<b>%s</b>: %s<br>\n' % (param, request.params.get(param))
+
+    if request.POST:
+        response += '<h3>Params com request.POST:</h3>\n'
+        for param in request.POST:
+            response += '<b>%s</b>: %s<br>\n' % (param, request.POST.get(param))
 
     return response
+
+
+@app.route('/banana')
+def test():
+    response.set_cookie("visited", "yes")
+    return {'banana': True}
 
 
 if __name__ == '__main__':
