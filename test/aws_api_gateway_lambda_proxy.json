@@ -1,10 +1,10 @@
 {
     "body": null,
-    "resource": "/py_bottle_test",
+    "resource": "/test/",
     "requestContext": {
         "resourceId": "sp22ba",
         "apiId": "nqn2uyi3ej",
-        "resourcePath": "/py_bottle_test",
+        "resourcePath": "/test/",
         "httpMethod": "GET",
         "requestId": "e75b7619-89dc-11e6-992d-89cdc37eedd7",
         "accountId": "444914307613",
@@ -48,5 +48,5 @@
         "Accept-Encoding": "gzip, deflate, sdch, br"
     },
     "stageVariables": null,
-    "path": "/py_bottle_test"
+    "path": "/test/"
 }

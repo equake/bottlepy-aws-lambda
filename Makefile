@@ -8,7 +8,7 @@ ENV?=dev
 FUNCTION_NAME?=py_bottle_test
 FUNCTION_HANDLER?=sample_lambda.sample_handler
 MEMORY_SIZE?=128
-TIMEOUT?=60
+TIMEOUT?=10
 
 FUNCTION_ARN=arn:aws:lambda:$(REGION_NAME):$(ACCOUNT_ID):function:$(FUNCTION_NAME)
 ROLE_ARN=arn:aws:iam::$(ACCOUNT_ID):role/$(ROLE)

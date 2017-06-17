@@ -1,5 +1,5 @@
 import logging
-import urllib
+from urllib.parse import urlencode
 from io import StringIO
 
 SPECIAL_HEADERS = ('CONTENT_TYPE', 'CONTENT_LENGTH')
@@ -28,19 +28,22 @@ class StartResponse(object):
         return self.exc_info
 
 
+# noinspection PyBroadException
 def handler(wsgi_app, event, context):
     wsgi_environ = {
         'wsgi.input': StringIO(event.get('body')),
         'wsgi.errors': StringIO(),
-        'PATH_INFO': '/%s%s' % (str(event['requestContext']['stage']), str(event['path'])),
+        'PATH_INFO': '/%s%s' % (str(event.get('requestContext', {}).get('stage', 'local')), str(event.get('path'))),
         'REQUEST_METHOD': str(event.get('httpMethod', 'GET'))
     }
 
-    if 'queryStringParameters' in event and event['queryStringParameters']:
-        wsgi_environ['QUERY_STRING'] = urllib.urlencode(event['queryStringParameters'])
+    query_string = event.get('queryStringParameters')
+    if query_string:
+        wsgi_environ['QUERY_STRING'] = urlencode(query_string)
 
-    if 'headers' in event and event['headers']:
-        for header, value in event['headers'].items():
+    headers = event.get('headers')
+    if headers:
+        for header, value in headers.items():
             header = str(header.replace('-', '_')).upper()
             if header not in SPECIAL_HEADERS:
                 header = 'HTTP_%s' % header
@@ -50,15 +53,15 @@ def handler(wsgi_app, event, context):
     wsgi_response = wsgi_app(wsgi_environ, start_response.start)
 
     lambda_response = {
-        'body': ''.join(wsgi_response),
+        'body': b''.join(wsgi_response).decode('utf-8'),
         'headers': start_response.get_response_headers(),
         'statusCode': int(start_response.get_status().split(' ')[0])
     }
 
     if start_response.get_exc_info():
         try:
-            raise start_response.get_exc_info()
+            raise start_response.get_exc_info()  # re-launch exception just for
         except:
-            logging.exception('Error executing request')
+            logging.exception('Error executing request')  # catching it here for logging
 
     return lambda_response
