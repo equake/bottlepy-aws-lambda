@@ -31,7 +31,7 @@ validate:
 
 virtualenv:
 	if [ ! -d venv ]; then virtualenv -p python3 venv; fi
-	if [ ! -f venv/bin/pip ]; then venv/bin/pip install awscli; fi
+	if [ ! -f venv/bin/aws ]; then venv/bin/pip install awscli; fi
 	venv/bin/pip install --upgrade -r requirements.txt
 
 
@@ -51,7 +51,7 @@ publish: validate build
 		--runtime python3.6 \
 		--role $(ROLE_ARN) \
 		--handler "$(FUNCTION_HANDLER)" \
-		--description "$(DESCRIPTION)" \
+		--description "$(DESCRIPTION) $(VERSION)" \
 		--timeout $(TIMEOUT) \
 		--memory-size $(MEMORY_SIZE) \
 		--zip-file fileb://dist/$(FUNCTION_NAME)-$(VERSION)-lambda.zip
