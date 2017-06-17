@@ -1,22 +1,18 @@
-DESCRIPTION=Elasticsearch cluster curator
+DESCRIPTION?=Sample Bottle-Lambda application
 
-ACCOUNT_ID?=444914307613
+ACCOUNT_ID?=
+ROLE?=
 REGION_NAME?=us-east-1
-ROLE?=lambda_varnish_dynamic_elb
 
-ENV?=prod
-#EVENT_NAME?=daily_event
+ENV?=dev
 FUNCTION_NAME?=py_bottle_test
-MEMORY_SIZE=128
+FUNCTION_HANDLER?=sample_lambda.sample_handler
+MEMORY_SIZE?=128
 TIMEOUT?=60
 
-#EVENT_SOURCE_ARN=arn:aws:events:$(REGION_NAME):$(ACCOUNT_ID):rule/$(EVENT_NAME)
-#FUNCTION_ARN=arn:aws:lambda:$(REGION_NAME):$(ACCOUNT_ID):function:$(ENV)-$(FUNCTION_NAME)
 FUNCTION_ARN=arn:aws:lambda:$(REGION_NAME):$(ACCOUNT_ID):function:$(FUNCTION_NAME)
 ROLE_ARN=arn:aws:iam::$(ACCOUNT_ID):role/$(ROLE)
 VERSION=$(shell python setup.py -V)
-
-export
 
 
 all:
@@ -24,8 +20,18 @@ all:
 	$(MAKE) build publish
 
 
+validate:
+	$(if $(ACCOUNT_ID),,$(error ACCOUNT_ID is undefined))
+	$(if $(ROLE),,$(error ROLE is undefined))
+	$(if $(REGION_NAME),,$(error REGION_NAME is undefined))
+	$(if $(ENV),,$(error ENV is undefined))
+	$(if $(FUNCTION_NAME),,$(error FUNCTION_NAME is undefined))
+	$(if $(FUNCTION_HANDLER),,$(error FUNCTION_HANDLER is undefined))
+
+
 virtualenv:
-	if [ ! -d venv ]; then virtualenv venv; venv/bin/pip install --upgrade awscli; fi
+	if [ ! -d venv ]; then virtualenv -p python3 venv; fi
+	if [ ! -f venv/bin/pip ]; then venv/bin/pip install awscli; fi
 	venv/bin/pip install --upgrade -r requirements.txt
 
 
@@ -34,17 +40,17 @@ build: virtualenv
 	mkdir build
 	cp sample_lambda.py build/ && cp -R -v mcmweb build/
 	- cat requirements.txt | grep -v boto > build/requirements.txt && venv/bin/pip install --upgrade --no-compile -r build/requirements.txt -t build/
-	pushd build/ && zip -9 -r ../dist/$(FUNCTION_NAME)-$(VERSION)-lambda.zip . && popd
+	cd build/ && zip -9 -x *.pyc -r ../dist/$(FUNCTION_NAME)-$(VERSION)-lambda.zip . && cd ..
 	rm -rf build
 
 
-publish: build
+publish: validate build
 	venv/bin/aws lambda create-function \
 		--region $(REGION_NAME) \
 		--function-name $(FUNCTION_ARN) \
-		--runtime python2.7 \
+		--runtime python3.6 \
 		--role $(ROLE_ARN) \
-		--handler lambda.lambda_handler \
+		--handler "$(FUNCTION_HANDLER)" \
 		--description "$(DESCRIPTION)" \
 		--timeout $(TIMEOUT) \
 		--memory-size $(MEMORY_SIZE) \
@@ -62,7 +68,7 @@ publish: build
 #		--targets '{"Id" : "1", "Arn": "$(FUNCTION_ARN)"}'
 
 
-update: build
+update: validate build
 	venv/bin/aws lambda update-function-code \
 		--region $(REGION_NAME) \
 		--function-name $(FUNCTION_ARN) \
@@ -73,7 +79,7 @@ update: build
 		--description "Package $(FUNCTION_NAME) version $(VERSION)"
 
 
-destroy:
+destroy: validate
 	venv/bin/aws lambda delete-function \
 		--region $(REGION_NAME) \
 		--function-name $(FUNCTION_ARN)

@@ -8,5 +8,5 @@ lambda_app.mount('/prod/test', app)
 
 
 def sample_handler(event, context):
-    print json.dumps(event)
+    print(json.dumps(event))
     return handler(lambda_app, event, context)

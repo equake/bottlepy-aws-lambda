@@ -1,8 +1,6 @@
-from __future__ import print_function
-
 import logging
 import urllib
-from StringIO import StringIO
+from io import StringIO
 
 SPECIAL_HEADERS = ('CONTENT_TYPE', 'CONTENT_LENGTH')
 
@@ -42,7 +40,7 @@ def handler(wsgi_app, event, context):
         wsgi_environ['QUERY_STRING'] = urllib.urlencode(event['queryStringParameters'])
 
     if 'headers' in event and event['headers']:
-        for header, value in event['headers'].iteritems():
+        for header, value in event['headers'].items():
             header = str(header.replace('-', '_')).upper()
             if header not in SPECIAL_HEADERS:
                 header = 'HTTP_%s' % header

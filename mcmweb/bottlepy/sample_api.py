@@ -5,7 +5,7 @@ debug(True)
 
 
 @app.route('/', method=['GET', 'POST'])
-def test():
+def main_route():
     response = '<h1>Funfa!</h1>'
 
     if request.headers:
@@ -27,7 +27,7 @@ def test():
 
 
 @app.route('/banana')
-def test():
+def banana_route():
     response.set_cookie("visited", "yes")
     return {'banana': True}
 
